@@ -1,8 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('login');
 });
+
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register.form');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+

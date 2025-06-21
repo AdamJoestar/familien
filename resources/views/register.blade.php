@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
@@ -6,7 +7,7 @@
     <link as="style"
         href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B600%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B600%3B700%3B900"
         onload="this.rel='stylesheet'" rel="stylesheet" />
-    <title>Familien Property</title>
+    <title>Register - Familien Property</title>
     <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style type="text/tailwindcss">
@@ -35,9 +36,9 @@
                     </div>
                     <h1 class="text-2xl font-bold tracking-tight">Familien Property</h1>
                 </div>
-                <p class="text-slate-600 text-sm">Login to enter your dashboard</p>
+                <p class="text-slate-600 text-sm">Create a new account</p>
             </header>
-            <form method="POST" action="/login" class="space-y-6">
+            <form method="POST" action="/register" class="space-y-6">
                 @csrf
                 @if ($errors->any())
                     <div class="mb-4 text-red-600 text-sm">
@@ -52,39 +53,55 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1" for="username">Username</label>
                     <input autocomplete="username"
                         class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm placeholder-slate-400"
-                        id="username" name="username" placeholder="your-username" required="" type="text" />
+                        id="username" name="username" placeholder="your-username" required type="text" value="{{ old('username') }}" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="name">Name</label>
+                    <input autocomplete="name"
+                        class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm placeholder-slate-400"
+                        id="name" name="name" placeholder="Your full name" required type="text" value="{{ old('name') }}" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="email">Email</label>
+                    <input autocomplete="email"
+                        class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm placeholder-slate-400"
+                        id="email" name="email" placeholder="you@example.com" required type="email" value="{{ old('email') }}" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1" for="password">Password</label>
-                    <input autocomplete="current-password"
+                    <input autocomplete="new-password"
                         class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm placeholder-slate-400"
-                        id="password" name="password" placeholder="••••••••" required="" type="password" />
+                        id="password" name="password" placeholder="••••••••" required type="password" />
                 </div>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input
-                            class="h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-color)] border-slate-300 rounded"
-                            id="remember-me" name="remember-me" type="checkbox" />
-                        <label class="ml-2 block text-sm text-slate-700" for="remember-me">Remember me</label>
-                    </div>
-                    <div class="text-sm">
-                        <a class="font-medium text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"
-                            href="#">Forgot your password?</a>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="password_confirmation">Confirm Password</label>
+                    <input autocomplete="new-password"
+                        class="form-input block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm placeholder-slate-400"
+                        id="password_confirmation" name="password_confirmation" placeholder="••••••••" required type="password" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="role">Role</label>
+                    <select
+                        class="form-select block w-full rounded-lg border-slate-300 bg-slate-50 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] py-3 px-4 text-sm"
+                        id="role" name="role" required>
+                        <option value="">Select a role</option>
+                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    </select>
                 </div>
                 <div>
                     <button
                         class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-[var(--primary-color)] hover:bg-[var(--primary-color-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary-color)] transition-colors duration-150"
                         type="submit">
-                        Sign In
+                        Create Account
                     </button>
                 </div>
             </form>
-                <p class="text-center text-sm text-slate-500">
-                    Need an account? <a
-                        class="font-medium text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"
-                        href="{{ route('register.form') }}">Contact Administrator</a>
-                </p>
+            <p class="text-center text-sm text-slate-500">
+                Already have an account? <a
+                    class="font-medium text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"
+                    href="/">Sign in</a>
+            </p>
         </div>
     </div>
 
