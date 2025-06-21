@@ -1,12 +1,11 @@
 <html>
-
 <head>
     <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
     <link as="style"
         href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
         onload="this.rel='stylesheet'" rel="stylesheet" />
     <meta charset="utf-8" />
-    <title>Apartment Maintenance</title>
+    <title>Familien </title>
     <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style type="text/tailwindcss">
@@ -33,6 +32,12 @@
             background-color: #e6fffa;
             color: #38a169;
             border: 1px solid #a0f0d0;
+        }
+
+        .status-maintenance {
+            background-color: #fff9db;
+            color: #d69e2e;
+            border: 1px solid #f6e05e;
         }
 
         .status-occupied {
@@ -89,16 +94,12 @@
                         </svg>
                     </div>
                     <h2 class="text-[var(--text-primary)] text-xl font-semibold leading-tight tracking-[-0.015em]">
-                        Property Management</h2>
+                        Familien</h2>
                 </div>
                 <nav class="hidden lg:flex items-center gap-8">
-                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
+                    <a class="nav-link-active text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
                         href="#">Dashboard</a>
-                    <a class="nav-link-active text-sm font-medium leading-normal" href="#">Units</a>
-                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
-                        href="#">Residents</a>
-                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
-                        href="#">Leases</a>
+                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal" href="#">Units</a>
                     <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
                         href="#">Maintenance</a>
                     <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
@@ -132,9 +133,15 @@
             </header>
             <main class="px-6 lg:px-10 flex flex-1 justify-center py-8">
                 <div class="layout-content-container flex flex-col w-full max-w-6xl">
+                    @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                        {{ session('success') }}
+                    </div>
+                    @endif
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6 px-1">
                         <h1 class="text-[var(--text-primary)] text-3xl font-bold leading-tight">Apartment Units</h1>
                         <button
+                            onclick="document.getElementById('addUnitModal').classList.remove('hidden')"
                             class="action-button flex items-center justify-center gap-2 rounded-lg h-10 px-5 text-sm font-medium leading-normal shadow-sm transition-colors">
                             <svg fill="currentColor" height="18px" viewBox="0 0 256 256" width="18px"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +152,7 @@
                             <span class="truncate">Add New Unit</span>
                         </button>
                     </div>
-                    <div class="mb-6 px-1">
+                    <form method="GET" action="{{ route('dashboard') }}" class="mb-6 px-1">
                         <label class="flex flex-col min-w-40 h-12 w-full max-w-md">
                             <div
                                 class="flex w-full flex-1 items-stretch rounded-lg h-full shadow-sm border border-transparent focus-within:border-[var(--primary-color)] focus-within:ring-1 focus-within:ring-[var(--primary-color)]">
@@ -159,11 +166,12 @@
                                     </svg>
                                 </div>
                                 <input
+                                    name="search"
                                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-[var(--text-primary)] focus:outline-none focus:ring-0 border-none bg-[var(--secondary-color)] h-full placeholder:text-[var(--text-secondary)] px-4 py-2 text-sm font-normal leading-normal"
-                                    placeholder="Search by unit number, resident, etc." value="" />
+                                    placeholder="Search by unit number, floor, tower, status" value="{{ $search ?? '' }}" />
                             </div>
                         </label>
-                    </div>
+                    </form>
                     <div class="bg-white shadow-lg rounded-xl overflow-hidden @container">
                         <div class="overflow-x-auto">
                             <table class="w-full min-w-[900px]">
@@ -174,287 +182,159 @@
                                             Unit</th>
                                         <th
                                             class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
-                                            Type</th>
+                                            Floor</th>
+                                        <th
+                                            class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
+                                            Tower</th>
                                         <th
                                             class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
                                             Status</th>
                                         <th
                                             class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
-                                            Rent</th>
-                                        <th
-                                            class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
-                                            Lease End Date</th>
-                                        <th
-                                            class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
-                                            Resident</th>
-                                        <th
-                                            class="table-header-custom px-6 py-4 text-left text-xs tracking-wider uppercase">
                                             <span class="sr-only">Actions</span></th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[var(--border-color)]">
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">101</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Studio</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-vacant">Vacant</span>
+                                <tbody>
+                                    @forelse ($units as $unit)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $unit->unit_number }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $unit->floor }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $unit->tower }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span class="
+                                                @if($unit->status == 'available') status-vacant
+                                                @elseif($unit->status == 'maintenance') status-maintenance
+                                                @elseif($unit->status == 'occupied') status-occupied
+                                                @else ''
+                                                @endif
+                                                px-2 py-1 rounded-full text-xs font-semibold">
+                                                {{ ucfirst($unit->status) }}
+                                            </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,200</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
+                                            <button
+                                                onclick="openEditModal({{ $unit->id }}, '{{ $unit->unit_number }}', {{ $unit->floor }}, '{{ $unit->tower }}', '{{ $unit->status }}')"
+                                                class="text-indigo-600 hover:text-indigo-900 text-sm font-medium mr-2">
+                                                Edit
+                                            </button>
+                                            <form method="POST" action="{{ route('units.delete', $unit->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this unit?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                                    Delete
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">102</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">1
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,500</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            08/15/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Olivia Bennett</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No units found.</td>
                                     </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">103</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">2
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,800</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            12/31/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Ethan Carter</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">104</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Studio</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-vacant">Vacant</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,200</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">105</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">1
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,500</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            06/30/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Sophia Davis</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">106</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">2
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,800</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            09/01/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Liam Evans</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">107</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Studio</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-vacant">Vacant</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,200</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">108</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">1
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,500</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            11/15/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Ava Foster</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">109</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">2
-                                            Bedroom</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-occupied">Occupied</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,800</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            07/20/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Noah Green</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--primary-color)]">
-                                            <a class="hover:underline" href="#">110</a></td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            Studio</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-vacant">Vacant</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            $1,200</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                                            N/A</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a class="text-[var(--primary-color)] hover:text-[#0a5cb0]"
-                                                href="#">View</a>
-                                        </td>
-                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <div class="mt-6 flex justify-center">
-                        <nav aria-label="Pagination">
-                            <ul class="inline-flex items-center -space-x-px">
-                                <li>
-                                    <a class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                                        href="#">
-                                        <span class="sr-only">Previous</span>
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path clip-rule="evenodd"
-                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                fill-rule="evenodd"></path>
-                                        </svg>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a aria-current="page"
-                                        class="z-10 py-2 px-3 leading-tight text-[var(--primary-color)] bg-blue-50 border border-[var(--primary-color)] hover:bg-blue-100 hover:text-[#0a5cb0]"
-                                        href="#">1</a>
-                                </li>
-                                <li>
-                                    <a class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                                        href="#">2</a>
-                                </li>
-                                <li>
-                                    <a class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                                        href="#">3</a>
-                                </li>
-                                <li>
-                                    <a class="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                                        href="#">
-                                        <span class="sr-only">Next</span>
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path clip-rule="evenodd"
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                fill-rule="evenodd"></path>
-                                        </svg>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                        {{ $units->withQueryString()->links() }}
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- Add Unit Modal -->
+    <div id="addUnitModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Add New Unit</h2>
+            <form method="POST" action="{{ route('units.store') }}">
+                @csrf
+                <div class="mb-4">
+                    <label for="unit_number" class="block text-sm font-medium text-gray-700">Unit Number</label>
+                    <input type="text" name="unit_number" id="unit_number" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="floor" class="block text-sm font-medium text-gray-700">Floor</label>
+                    <input type="number" name="floor" id="floor" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="tower" class="block text-sm font-medium text-gray-700">Tower</label>
+                    <input type="text" name="tower" id="tower" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select name="status" id="status" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50">
+                        <option value="available">Available</option>
+                        <option value="occupied">Occupied</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('addUnitModal').classList.add('hidden')"
+                        class="secondary-button rounded-lg px-4 py-2">Cancel</button>
+                    <button type="submit" class="action-button rounded-lg px-4 py-2">Add Unit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Unit Modal -->
+    <div id="editUnitModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-semibold mb-4">Edit Unit</h2>
+            <form id="editUnitForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="mb-4">
+                    <label for="edit_unit_number" class="block text-sm font-medium text-gray-700">Unit Number</label>
+                    <input type="text" name="unit_number" id="edit_unit_number" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="edit_floor" class="block text-sm font-medium text-gray-700">Floor</label>
+                    <input type="number" name="floor" id="edit_floor" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="edit_tower" class="block text-sm font-medium text-gray-700">Tower</label>
+                    <input type="text" name="tower" id="edit_tower" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50" />
+                </div>
+                <div class="mb-4">
+                    <label for="edit_status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select name="status" id="edit_status" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring focus:ring-[var(--primary-color)] focus:ring-opacity-50">
+                        <option value="available">Available</option>
+                        <option value="occupied">Occupied</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('editUnitModal').classList.add('hidden')"
+                        class="secondary-button rounded-lg px-4 py-2">Cancel</button>
+                    <button type="submit" class="action-button rounded-lg px-4 py-2">Update Unit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(id, unitNumber, floor, tower, status) {
+            const modal = document.getElementById('editUnitModal');
+            modal.classList.remove('hidden');
+
+            const form = document.getElementById('editUnitForm');
+            form.action = `/units/${id}`;
+
+            document.getElementById('edit_unit_number').value = unitNumber;
+            document.getElementById('edit_floor').value = floor;
+            document.getElementById('edit_tower').value = tower;
+            document.getElementById('edit_status').value = status;
+        }
+    </script>
 </body>
 
 </html>

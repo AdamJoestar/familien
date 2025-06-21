@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -24,9 +25,36 @@ class AuthController extends Controller
         ])->withInput();
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return view('dashboard');
+        $search = $request->input('search');
+
+        $units = Unit::query();
+
+        if ($search) {
+            $units->where('unit_number', 'like', "%{$search}%")
+                ->orWhere('floor', 'like', "%{$search}%")
+                ->orWhere('tower', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
+        }
+
+        $units = $units->paginate(10);
+
+        return view('dashboard', ['units' => $units, 'search' => $search]);
+    }
+
+    public function storeUnit(Request $request)
+    {
+        $validated = $request->validate([
+            'unit_number' => 'required|string|unique:units,unit_number',
+            'floor' => 'required|integer',
+            'tower' => 'required|string',
+            'status' => 'required|string',
+        ]);
+
+        Unit::create($validated);
+
+        return redirect()->route('dashboard')->with('success', 'Unit added successfully.');
     }
 
     public function registerForm()
@@ -55,5 +83,29 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('dashboard');
+    }
+
+    public function updateUnit(Request $request, $id)
+    {
+        $unit = Unit::findOrFail($id);
+
+        $validated = $request->validate([
+            'unit_number' => 'required|string|unique:units,unit_number,' . $unit->id,
+            'floor' => 'required|integer',
+            'tower' => 'required|string',
+            'status' => 'required|string',
+        ]);
+
+        $unit->update($validated);
+
+        return redirect()->route('dashboard')->with('success', 'Unit updated successfully.');
+    }
+
+    public function deleteUnit($id)
+    {
+        $unit = Unit::findOrFail($id);
+        $unit->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Unit deleted successfully.');
     }
 }
