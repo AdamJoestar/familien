@@ -21,4 +21,14 @@ class MaintenanceReport extends Model
         'completed_at',
         'documentation_images',
     ];
+
+    public function reportedBy()
+    {
+        return $this->belongsTo(User::class, 'reported_by_id');
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to_id');
+    }
 }

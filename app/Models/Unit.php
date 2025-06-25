@@ -15,4 +15,9 @@ class Unit extends Model
         'tower',
         'status',
     ];
+
+    public function maintenanceReports()
+    {
+        return $this->hasMany(\App\Models\MaintenanceReport::class);
+    }
 }

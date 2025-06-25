@@ -108,4 +108,13 @@ class AuthController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Unit deleted successfully.');
     }
+
+    public function showUnit($id)
+    {
+        $unit = Unit::findOrFail($id);
+        $maintenanceReports = \App\Models\MaintenanceReport::where('unit_id', $id)
+            ->orderBy('reported_at', 'desc')
+            ->get();
+        return view('units.show', compact('unit', 'maintenanceReports'));
+    }
 }

@@ -212,6 +212,9 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="{{ route('units.show', $unit->id) }}" class="text-blue-600 hover:text-blue-900 text-sm font-medium mr-2">
+                                                View
+                                            </a>
                                             <button
                                                 onclick="openEditModal({{ $unit->id }}, '{{ $unit->unit_number }}', {{ $unit->floor }}, '{{ $unit->tower }}', '{{ $unit->status }}')"
                                                 class="text-indigo-600 hover:text-indigo-900 text-sm font-medium mr-2">

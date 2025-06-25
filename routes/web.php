@@ -16,4 +16,5 @@ Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard'
 Route::post('/units', [AuthController::class, 'storeUnit'])->name('units.store');
 Route::put('/units/{id}', [AuthController::class, 'updateUnit'])->name('units.update');
 Route::delete('/units/{id}', [AuthController::class, 'deleteUnit'])->name('units.delete');
+Route::get('/units/{id}', [AuthController::class, 'showUnit'])->name('units.show');
 
