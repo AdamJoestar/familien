@@ -67,7 +67,7 @@
         }
 
         .action-button:hover {
-            background-color: #0b6acb;
+            background-color: #939809;
         }
 
         .secondary-button {
@@ -99,11 +99,9 @@
                 <nav class="hidden lg:flex items-center gap-8">
                     <a class="nav-link-active text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
                         href="#">Dashboard</a>
-                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal" href="#">Units</a>
                     <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
                         href="#">Maintenance</a>
-                    <a class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] text-sm font-medium leading-normal"
-                        href="#">Reports</a>
+                    
                 </nav>
                 <div class="flex items-center gap-4">
                     <button
